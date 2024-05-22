@@ -5,8 +5,9 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     try {
-        let products = await productsModel.find();
-        res.send({ result: "success", payload: products });
+        let products = await productsModel.find().lean();
+        // res.send({ result: "success", payload: products });
+        res.render('home', { products });
     } catch (error) {
         console.error("No se pudieron obtener los productos", error);
     }
@@ -15,7 +16,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         let { title, description, price, thumbnail, code, stock, status } = req.body;
-        if (!title, !description, !price, !thumbnail, !code, !stock, !status) {
+        if (!title || !description || !price || !thumbnail || !code || !stock || !status) {
             res.send({ status: "error", error: "Algunos parametros estan vacios" });
         }
         let result = await productsModel.create({ title, description, price, thumbnail, code, stock, status });
@@ -42,7 +43,7 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
     let { pid } = req.params;
     let result = await productsModel.deleteOne({ _id: pid });
-    res.send({result: "success", payload: result});
+    res.send({ result: "success", payload: result });
 })
 
 export default router;
