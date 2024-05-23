@@ -6,10 +6,17 @@ const router = Router();
 router.get("/", async (req, res) => {
     try {
         let products = await productsModel.find().lean();
-        // res.send({ result: "success", payload: products });
         res.render('home', { products });
     } catch (error) {
         console.error("No se pudieron obtener los productos", error);
+    }
+})
+
+router.get("/post", async (req, res) => {
+    try {
+        res.render('postProduct');
+    } catch (error) {
+        console.error("No se pudo renderizar la vista", error);
     }
 })
 
