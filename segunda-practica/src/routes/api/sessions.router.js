@@ -22,7 +22,7 @@ router.post('/login', passport.authenticate('login', { failureRedirect: 'faillog
             age: req.user.age,
         };
         console.log(req.session.user)
-        res.redirect('/profile');
+        res.redirect('/current');
 
     } catch (err) {
         res.status(500).send('Error al iniciar sesión');

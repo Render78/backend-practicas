@@ -75,11 +75,11 @@ const initializePassport = () => {
         async (accessToken, refreshToken, profile, done) => {
             try {
                 console.log("Profile from GitHub:", profile);
+                
+                const email = profile._json.email || `${profile.username}@github.com`;
+                let user = await userModel.findOne({ email });
 
-                let user = await userModel.findOne({ email: profile._json.email });
                 if (!user) {                    
-                    const email = profile._json.email || `${profile.username}@github.com`;
-                    
                     const [first_name, last_name] = profile.displayName.split(' ');
 
                     console.log("Creating new user with data:");
