@@ -19,13 +19,19 @@ const initializePassport = () => {
                     console.log("El usuario ya existe");
                     return done(null, false);
                 }
+                
+                const hashedPassword = createHash(password);
+                console.log('Contraseña original:', password);
+                console.log('Contraseña hasheada:', hashedPassword);
+    
                 const newUser = new userModel({
                     first_name,
                     last_name,
                     email,
                     age,
-                    password: createHash(password)
+                    password: hashedPassword
                 });
+    
                 let result = await newUser.save();
                 return done(null, result);
             } catch (error) {
@@ -43,7 +49,13 @@ const initializePassport = () => {
                     console.log("El usuario no existe");
                     return done(null, false);
                 }
-                if (!user.comparePassword(password)) {
+
+                console.log('Contraseña ingresada:', password);
+                console.log('Contraseña almacenada:', user.password);
+
+                const isMatch = await user.comparePassword(password);
+                console.log('¿Las contraseñas coinciden?', isMatch);
+                if (!isMatch) {
                     console.log("Contraseña incorrecta");
                     return done(null, false);
                 }
