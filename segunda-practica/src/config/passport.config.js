@@ -19,11 +19,11 @@ const initializePassport = () => {
                     console.log("El usuario ya existe");
                     return done(null, false);
                 }
-                
+
                 const hashedPassword = createHash(password);
                 console.log('Contraseña original:', password);
                 console.log('Contraseña hasheada:', hashedPassword);
-    
+
                 const newUser = new userModel({
                     first_name,
                     last_name,
@@ -31,7 +31,7 @@ const initializePassport = () => {
                     age,
                     password: hashedPassword
                 });
-    
+
                 let result = await newUser.save();
                 return done(null, result);
             } catch (error) {
@@ -74,18 +74,36 @@ const initializePassport = () => {
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
+                console.log("Profile from GitHub:", profile);
+
                 let user = await userModel.findOne({ email: profile._json.email });
-                if (!user) {
+                if (!user) {                    
+                    const email = profile._json.email || `${profile.username}@github.com`;
+                    
+                    const [first_name, last_name] = profile.displayName.split(' ');
+
+                    console.log("Creating new user with data:");
+                    console.log("First Name:", first_name);
+                    console.log("Last Name:", last_name);
+                    console.log("Email:", email);
+                    
                     const newUser = new userModel({
-                        first_name: profile._json.name,
-                        email: profile._json.email,
-                        age: 20,
+                        first_name,
+                        last_name: last_name || 'N/A',
+                        email,
+                        age: 20,                        
                         password: ""
                     });
+
                     user = await newUser.save();
+                    console.log("New user created:", user);
+                } else {
+                    console.log("User found in database:", user);
                 }
+
                 return done(null, user);
             } catch (error) {
+                console.error("Error in GitHub passport strategy:", error);
                 return done(error);
             }
         }
